@@ -7,13 +7,16 @@ import { WorkspaceMembersModule } from './workspace-members/workspace-members.mo
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { postgresConfig } from './configs/dbConfig.config';
 
 @Module({
   imports: [UsersModule, WorkspacesModule, WorkspaceMembersModule, ProjectsModule, TasksModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
-    })],
+    }),
+    TypeOrmModule.forRoot(postgresConfig),],
   controllers: [AppController],
   providers: [AppService],
 })
