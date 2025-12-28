@@ -1,0 +1,64 @@
+import { Project } from 'src/projects/entities/project.entity';
+import { Task } from 'src/tasks/entities/task.entity';
+import { Workspace } from 'src/workspaces/entities/workspace.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
+
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid', {name: 'id'})
+  id: string;
+
+  @Column({ type: 'varchar', length: 255, unique: true, name: 'email' })
+  email: string;
+
+  @Column({ type: 'varchar', length: 255, name: 'password' })
+  password: string;
+
+  @Column({ nullable: true, name: 'hashed_refresh_token' })
+  hashedRefreshToken: string | null;
+
+  @Column({ type: 'varchar', length: 255, name: 'name' })
+  name: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+    name: 'role'
+  })
+  role: UserRole;
+
+  @Column({ default: true, name: 'is_active' })
+  isActive: boolean;
+
+  @CreateDateColumn({name: 'created_at'})
+  createdAt: Date;
+
+  @UpdateDateColumn({name: 'updated_at'})
+  updatedAt: Date;
+
+  @OneToMany(() => Workspace, (workspace) => workspace.owner)
+  workspaces: Workspace[];
+
+  @OneToMany(() => Project, (project) => project.user)
+  projects: Project[];
+  
+  @OneToMany(() => Task, (task) => task.createdBy)
+  createdTasks: Task[];
+
+  @OneToMany(() => Task, (task) => task.assignedTo)
+  assignedTasks: Task[];
+}
