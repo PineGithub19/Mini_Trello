@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { compare, hash } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './types/jwt-payload';
+import { AuthException } from 'src/common/exceptions/auth.exception';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,7 @@ export class AuthService {
         const user = await this.usersService.findByEmail(createUserDto.email);
 
         if (user) {
-            throw new Error('User already exists');
+            throw new AuthException('User already exists', 409);
         }
 
         return this.usersService.create(createUserDto);
@@ -35,13 +36,13 @@ export class AuthService {
         const user = await this.usersService.findByEmail(email);
 
         if (!user) {
-            throw new Error('User not found');
+            throw new AuthException('User not found', 404);
         }
 
         const ispasswordMatch = await compare(password, user.password);
 
         if (!ispasswordMatch) {
-            throw new Error('Invalid password');
+            throw new AuthException('Invalid password', 401);
         }
 
         const tokens = await this.getTokens(user.id);
@@ -58,12 +59,12 @@ export class AuthService {
 
             const user = await this.usersService.findOne(payload.sub);
             if (!user || !user.hashedRefreshToken) {
-                throw new UnauthorizedException('Access Denied');
+                throw new AuthException('Access Denied', 401);
             }
 
             const refreshTokenMatches = await compare(refresh_token, user.hashedRefreshToken);
             if (!refreshTokenMatches) {
-                throw new UnauthorizedException('Access Denied');
+                throw new AuthException('Access Denied', 401);
             }
 
             const tokens = await this.getTokens(user.id);
@@ -71,7 +72,7 @@ export class AuthService {
 
             return tokens;
         } catch {
-            throw new UnauthorizedException();
+            throw new AuthException('Access Denied', 401);
         }
     }
 
@@ -82,12 +83,12 @@ export class AuthService {
 
         const user = await this.usersService.findOne(payload.sub);
         if (!user || !user.hashedRefreshToken) {
-            throw new UnauthorizedException('Access Denied');
+            throw new AuthException('Access Denied', 401);
         }
 
         const refreshTokenMatches = await compare(refresh_token, user.hashedRefreshToken);
         if (!refreshTokenMatches) {
-            throw new UnauthorizedException('Access Denied');
+            throw new AuthException('Access Denied', 401);
         }
 
         await this.usersService.update(user.id, { hashedRefreshToken: null });
