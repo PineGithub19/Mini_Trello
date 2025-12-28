@@ -8,8 +8,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  JoinColumn,
+  BeforeInsert,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 export enum UserRole {
   USER = 'user',
@@ -18,7 +19,7 @@ export enum UserRole {
 
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid', {name: 'id'})
+  @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
   @Column({ type: 'varchar', length: 255, unique: true, name: 'email' })
@@ -27,7 +28,7 @@ export class User {
   @Column({ type: 'varchar', length: 255, name: 'password' })
   password: string;
 
-  @Column({ nullable: true, name: 'hashed_refresh_token' })
+  @Column({ nullable: true, type: 'varchar', length: 255, name: 'hashed_refresh_token' })
   hashedRefreshToken: string | null;
 
   @Column({ type: 'varchar', length: 255, name: 'name' })
@@ -44,10 +45,10 @@ export class User {
   @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
-  @CreateDateColumn({name: 'created_at'})
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({name: 'updated_at'})
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @OneToMany(() => Workspace, (workspace) => workspace.owner)
@@ -55,10 +56,15 @@ export class User {
 
   @OneToMany(() => Project, (project) => project.user)
   projects: Project[];
-  
+
   @OneToMany(() => Task, (task) => task.createdBy)
   createdTasks: Task[];
 
   @OneToMany(() => Task, (task) => task.assignedTo)
   assignedTasks: Task[];
+
+  @BeforeInsert()
+  hashPassword() {
+    this.password = bcrypt.hashSync(this.password, 10);
+  }
 }

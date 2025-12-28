@@ -9,15 +9,23 @@ import { TasksModule } from './tasks/tasks.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresConfig } from './configs/dbConfig.config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UsersModule, WorkspacesModule, WorkspaceMembersModule, ProjectsModule, TasksModule,
+  imports: [
+    UsersModule,
+    WorkspacesModule,
+    WorkspaceMembersModule,
+    ProjectsModule,
+    TasksModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(postgresConfig),],
+    TypeOrmModule.forRoot(postgresConfig),
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
