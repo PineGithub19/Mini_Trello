@@ -1,4 +1,4 @@
-import { 
+import {
   IsEmail,
   IsString,
   IsEnum,
@@ -23,11 +23,7 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @MinLength(8) 
+  @MinLength(8)
   @MaxLength(20, { message: 'Password must be at most 20 characters long' })
   password: string;
-
-  @IsEnum(UserRole)
-  role: UserRole;
-
 }
