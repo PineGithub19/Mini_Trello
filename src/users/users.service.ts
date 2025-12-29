@@ -4,6 +4,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { UserResponse } from './response/user.response';
+import { UserMapper } from './mappers/user.mapper';
+import { UserException } from 'src/common/exceptions/user.exception';
 
 @Injectable()
 export class UsersService {
@@ -12,29 +15,62 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
     const user = this.userRepository.create(createUserDto);
-    return await this.userRepository.save(user);
+    return UserMapper.toResponse(await this.userRepository.save(user));
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return UserMapper.toResponseList(await this.userRepository.find());
+  }
+
+  async findUserById(id: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new UserException('User not found');
+    }
+    return UserMapper.toResponse(user);
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new UserException('User not found');
+    }
+
+    return user;
   }
 
   async findByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UserException('User not found');
+    }
+
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return await this.userRepository.update(id, updateUserDto);
+    const user = await this.userRepository.update(id, updateUserDto);
+
+    if (!user) {
+      throw new UserException('User not found');
+    }
+
+    const updatedUser = await this.userRepository.findOne({ where: { id } });
+    if (!updatedUser) {
+      throw new UserException('User not found');
+    }
+
+    return UserMapper.toResponse(updatedUser)
   }
 
-  async remove(id: number) {
-    return await this.userRepository.delete(id);
+  async remove(id: string) {
+    const user = await this.userRepository.delete(id);
+    if (!user) {
+      throw new UserException('User not found');
+    }
+    return user
   }
 }
 

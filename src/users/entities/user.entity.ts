@@ -11,6 +11,7 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
 
 export enum UserRole {
   USER = 'user',
@@ -25,9 +26,11 @@ export class User {
   @Column({ type: 'varchar', length: 255, unique: true, name: 'email' })
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar', length: 255, name: 'password' })
   password: string;
 
+  @Exclude()
   @Column({ nullable: true, type: 'varchar', length: 255, name: 'hashed_refresh_token' })
   hashedRefreshToken: string | null;
 

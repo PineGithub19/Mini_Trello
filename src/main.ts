@@ -11,6 +11,7 @@ async function bootstrap() {
     .setDescription('Mini Trello API description')
     .setVersion('1.0')
     .addTag('Mini Trello')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
