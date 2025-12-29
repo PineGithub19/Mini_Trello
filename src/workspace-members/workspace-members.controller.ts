@@ -4,6 +4,8 @@ import { WorkspaceMember } from './entities/workspace-member.entity';
 import { WorkspaceMembersService } from './workspace-members.service';
 import { CreateWorkspaceMemberDto } from './dto/create-workspace-member.dto';
 import { UpdateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
+import { WorkspaceMemberResponse } from './response/workspace-member.response';
+import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
 
 @ApiTags('Workspace Members')
 @ApiBearerAuth()
@@ -13,7 +15,7 @@ export class WorkspaceMembersController {
 
   @Post()
   @ApiOperation({ summary: 'Add a new member to workspace', description: 'Adds a user to a workspace.' })
-  @ApiResponse({ status: 201, description: 'The member has been successfully added.', type: WorkspaceMember })
+  @ApiResponseWithData(WorkspaceMemberResponse, { status: 201, description: 'The member has been successfully added.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createWorkspaceMemberDto: CreateWorkspaceMemberDto) {
     return this.workspaceMembersService.create(createWorkspaceMemberDto);
@@ -21,14 +23,14 @@ export class WorkspaceMembersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all workspace members', description: 'Retrieves a list of all workspace members.' })
-  @ApiResponse({ status: 200, description: 'Return all workspace members.', type: [WorkspaceMember] })
+  @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'Return all workspace members.' })
   findAll() {
     return this.workspaceMembersService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a workspace member by id', description: 'Retrieves a specific workspace member by their ID.' })
-  @ApiResponse({ status: 200, description: 'Return the workspace member.', type: WorkspaceMember })
+  @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'Return the workspace member.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
   @ApiParam({ name: 'id', description: 'Member ID' })
   findOne(@Param('id') id: string) {
@@ -37,7 +39,7 @@ export class WorkspaceMembersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a workspace member', description: 'Updates the details of a workspace member.' })
-  @ApiResponse({ status: 200, description: 'The member has been successfully updated.', type: WorkspaceMember })
+  @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'The member has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
   @ApiParam({ name: 'id', description: 'Member ID' })
   update(@Param('id') id: string, @Body() updateWorkspaceMemberDto: UpdateWorkspaceMemberDto) {
@@ -46,7 +48,7 @@ export class WorkspaceMembersController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Remove a member from workspace', description: 'Removes a member from a workspace.' })
-  @ApiResponse({ status: 200, description: 'The member has been successfully removed.', type: WorkspaceMember })
+  @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'The member has been successfully removed.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
   @ApiParam({ name: 'id', description: 'Member ID' })
   remove(@Param('id') id: string) {

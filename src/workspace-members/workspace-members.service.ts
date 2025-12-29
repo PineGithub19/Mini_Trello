@@ -4,6 +4,8 @@ import { UpdateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { WorkspaceMember } from './entities/workspace-member.entity';
 import { Repository } from 'typeorm';
+import { WorkspaceMemberMapper } from './mappers/workspace-member.mapper';
+import { WorkspaceMemberException } from 'src/common/exceptions/workspace-member.exception';
 
 @Injectable()
 export class WorkspaceMembersService {
@@ -14,34 +16,37 @@ export class WorkspaceMembersService {
 
   async create(createWorkspaceMemberDto: CreateWorkspaceMemberDto) {
     const workspaceMember = this.workspaceMemberRepository.create(createWorkspaceMemberDto);
-    return await this.workspaceMemberRepository.save(workspaceMember);
+    return WorkspaceMemberMapper.toResponse(await this.workspaceMemberRepository.save(workspaceMember));
   }
 
   async findAll() {
-    return await this.workspaceMemberRepository.find();
+    const workspaceMembers = await this.workspaceMemberRepository.find();
+    return WorkspaceMemberMapper.toResponseList(workspaceMembers);
   }
 
   async findOne(id: string) {
     const workspaceMember = await this.workspaceMemberRepository.findOne({ where: { id } });
     if (!workspaceMember) {
-      throw new Error('Workspace member not found');
+      throw new WorkspaceMemberException('Workspace member not found');
     }
-    return workspaceMember;
+    return WorkspaceMemberMapper.toResponse(workspaceMember);
   }
 
   async update(id: string, updateWorkspaceMemberDto: UpdateWorkspaceMemberDto) {
     const workspaceMember = await this.workspaceMemberRepository.findOne({ where: { id } });
     if (!workspaceMember) {
-      throw new Error('Workspace member not found');
+      throw new WorkspaceMemberException('Workspace member not found');
     }
-    return await this.workspaceMemberRepository.update({ id }, updateWorkspaceMemberDto);
+    await this.workspaceMemberRepository.update({ id }, updateWorkspaceMemberDto);
+    return this.findOne(id);
   }
 
   async remove(id: string) {
     const workspaceMember = await this.workspaceMemberRepository.findOne({ where: { id } });
     if (!workspaceMember) {
-      throw new Error('Workspace member not found');
+      throw new WorkspaceMemberException('Workspace member not found');
     }
-    return await this.workspaceMemberRepository.delete(workspaceMember);
+    await this.workspaceMemberRepository.remove(workspaceMember);
+    return WorkspaceMemberMapper.toResponse(workspaceMember);
   }
 }

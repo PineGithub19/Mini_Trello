@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskMapper } from './mappers/task.mapper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
@@ -14,11 +15,11 @@ export class TasksService {
 
   async create(createTaskDto: CreateTaskDto) {
     const task = this.taskRepository.create(createTaskDto);
-    return await this.taskRepository.save(task);
+    return TaskMapper.toResponse(await this.taskRepository.save(task));
   }
 
   async findAll() {
-    return await this.taskRepository.find();
+    return TaskMapper.toResponseList(await this.taskRepository.find());
   }
 
   async findOne(id: string) {
@@ -26,7 +27,7 @@ export class TasksService {
     if (!task) {
       throw new Error('Task not found');
     }
-    return task;
+    return TaskMapper.toResponse(task);
   }
 
   async update(id: string, updateTaskDto: UpdateTaskDto) {
@@ -34,7 +35,8 @@ export class TasksService {
     if (!task) {
       throw new Error('Task not found');
     }
-    return await this.taskRepository.update({ id }, updateTaskDto);
+    await this.taskRepository.update({ id }, updateTaskDto);
+    return this.findOne(id);
   }
 
   async remove(id: string) {
@@ -42,6 +44,7 @@ export class TasksService {
     if (!task) {
       throw new Error('Task not found');
     }
-    return await this.taskRepository.delete({ id });
+    await this.taskRepository.delete({ id });
+    return TaskMapper.toResponse(task);
   }
 }

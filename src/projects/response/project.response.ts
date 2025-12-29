@@ -1,24 +1,24 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class UserResponse {
+export class ProjectResponse {
     @ApiProperty()
     id: string;
-
-    @ApiProperty()
-    email: string;
 
     @ApiProperty()
     name: string;
 
     @ApiProperty()
-    role: string;
-
-    @ApiProperty()
-    isActive: boolean;
+    description: string;
 
     @ApiProperty()
     createdAt: Date;
 
     @ApiProperty()
     updatedAt: Date;
+
+    @ApiProperty()
+    workspaceId: string;
+
+    @ApiProperty()
+    createdById: string;
 }

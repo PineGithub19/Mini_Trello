@@ -1,8 +1,9 @@
 import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
+import { UserResponse } from './response/user.response';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -12,14 +13,14 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users', description: 'Retrieves a list of all registered users.' })
-  @ApiResponse({ status: 200, description: 'Return all users.', type: [User] })
+  @ApiResponseWithData(UserResponse, { status: 200, description: 'Return all users.' })
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by id', description: 'Retrieves a specific user by their unique ID.' })
-  @ApiResponse({ status: 200, description: 'Return the user.', type: User })
+  @ApiResponseWithData(UserResponse, { status: 200, description: 'Return the user.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @ApiParam({ name: 'id', description: 'User ID' })
   findOne(@Param('id') id: string) {
@@ -28,7 +29,7 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a user', description: 'Updates the details of an existing user.' })
-  @ApiResponse({ status: 200, description: 'The user has been successfully updated.', type: User })
+  @ApiResponseWithData(UserResponse, { status: 200, description: 'The user has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @ApiParam({ name: 'id', description: 'User ID' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -37,7 +38,7 @@ export class UsersController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a user', description: 'Removes a user from the system.' })
-  @ApiResponse({ status: 200, description: 'The user has been successfully deleted.', type: User })
+  @ApiResponseWithData(UserResponse, { status: 200, description: 'The user has been successfully deleted.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @ApiParam({ name: 'id', description: 'User ID' })
   remove(@Param('id') id: string) {

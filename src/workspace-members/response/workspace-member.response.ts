@@ -1,20 +1,18 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { WorkspaceMemberRole } from "../entities/workspace-member.entity";
 
-export class UserResponse {
+export class WorkspaceMemberResponse {
     @ApiProperty()
     id: string;
 
     @ApiProperty()
-    email: string;
+    workspaceId: string;
 
     @ApiProperty()
-    name: string;
+    userId: string;
 
     @ApiProperty()
-    role: string;
-
-    @ApiProperty()
-    isActive: boolean;
+    role: WorkspaceMemberRole;
 
     @ApiProperty()
     createdAt: Date;

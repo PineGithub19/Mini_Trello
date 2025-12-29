@@ -3,6 +3,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
+import { ProjectMapper } from './mappers/project.mapper';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -14,11 +15,11 @@ export class ProjectsService {
 
   async create(createProjectDto: CreateProjectDto) {
     const project = this.projectRepository.create(createProjectDto);
-    return await this.projectRepository.save(project);
+    return ProjectMapper.toResponse(await this.projectRepository.save(project));
   }
 
   async findAll() {
-    return await this.projectRepository.find();
+    return ProjectMapper.toResponseList(await this.projectRepository.find());
   }
 
   async findOne(id: string) {
@@ -26,7 +27,7 @@ export class ProjectsService {
     if (!project) {
       throw new Error('Project not found');
     }
-    return project;
+    return ProjectMapper.toResponse(project);
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
@@ -34,7 +35,8 @@ export class ProjectsService {
     if (!project) {
       throw new Error('Project not found');
     }
-    return await this.projectRepository.update({ id }, updateProjectDto);
+    await this.projectRepository.update({ id }, updateProjectDto);
+    return this.findOne(id);
   }
 
   async remove(id: string) {
@@ -42,6 +44,7 @@ export class ProjectsService {
     if (!project) {
       throw new Error('Project not found');
     }
-    return await this.projectRepository.delete({ id });
+    await this.projectRepository.delete({ id });
+    return ProjectMapper.toResponse(project);
   }
 }

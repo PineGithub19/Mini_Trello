@@ -1,9 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { Project } from './entities/project.entity';
-import { ProjectsService } from './projects.service';
+import { ProjectResponse } from './response/project.response';
+import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectsService } from './projects.service';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -13,7 +14,7 @@ export class ProjectsController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new project', description: 'Creates a new project within a workspace.' })
-  @ApiResponse({ status: 201, description: 'The project has been successfully created.', type: Project })
+  @ApiResponseWithData(ProjectResponse, { status: 201, description: 'The project has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createProjectDto: CreateProjectDto) {
     return this.projectsService.create(createProjectDto);
@@ -21,14 +22,14 @@ export class ProjectsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all projects', description: 'Retrieves a list of all projects.' })
-  @ApiResponse({ status: 200, description: 'Return all projects.', type: [Project] })
+  @ApiResponseWithData(ProjectResponse, { status: 200, description: 'Return all projects.' })
   findAll() {
     return this.projectsService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a project by id', description: 'Retrieves a specific project by its ID.' })
-  @ApiResponse({ status: 200, description: 'Return the project.', type: Project })
+  @ApiResponseWithData(ProjectResponse, { status: 200, description: 'Return the project.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
   @ApiParam({ name: 'id', description: 'Project ID' })
   findOne(@Param('id') id: string) {
@@ -37,7 +38,7 @@ export class ProjectsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a project', description: 'Updates the details of an existing project.' })
-  @ApiResponse({ status: 200, description: 'The project has been successfully updated.', type: Project })
+  @ApiResponseWithData(ProjectResponse, { status: 200, description: 'The project has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
   @ApiParam({ name: 'id', description: 'Project ID' })
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
@@ -46,7 +47,7 @@ export class ProjectsController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a project', description: 'Deletes a project and its associated data.' })
-  @ApiResponse({ status: 200, description: 'The project has been successfully deleted.', type: Project })
+  @ApiResponseWithData(ProjectResponse, { status: 200, description: 'The project has been successfully deleted.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
   @ApiParam({ name: 'id', description: 'Project ID' })
   remove(@Param('id') id: string) {

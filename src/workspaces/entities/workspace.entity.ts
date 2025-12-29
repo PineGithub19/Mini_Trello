@@ -4,16 +4,16 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, Pri
 
 @Entity('workspaces')
 export class Workspace {
-    @PrimaryGeneratedColumn('uuid', {name: 'id'})
+    @PrimaryGeneratedColumn('uuid', { name: 'id' })
     id: string;
 
     @Column({ name: 'name' })
     name: string;
 
-    @CreateDateColumn({name: 'created_at'})
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({name: 'updated_at'})
+    @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
     @Column({ type: 'uuid', name: 'owner_id' })

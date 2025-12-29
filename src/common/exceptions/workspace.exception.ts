@@ -1,6 +1,6 @@
 import { HttpException } from "@nestjs/common"
 
-export class AuthException extends HttpException {
+export class WorkspaceException extends HttpException {
     constructor(
         message: string,
         statusCode = 400,
