@@ -1,5 +1,5 @@
 import { IsEnum, IsUUID } from "class-validator";
-import { WorkspaceMemberRole } from "../entities/workspace-member.entity";
+import { WorkspaceMemberRole } from "src/auth/enums/role.enum";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateWorkspaceMemberDto {

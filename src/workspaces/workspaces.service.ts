@@ -6,17 +6,32 @@ import { Workspace } from './entities/workspace.entity';
 import { Repository } from 'typeorm';
 import { WorkspaceMapper } from './mappers/workspace.mapper';
 import { WorkspaceException } from 'src/common/exceptions/workspace.exception';
+import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member.entity';
+import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
 
 @Injectable()
 export class WorkspacesService {
   constructor(
     @InjectRepository(Workspace)
-    private workspaceRepository: Repository<Workspace>
+    private workspaceRepository: Repository<Workspace>,
+    @InjectRepository(WorkspaceMember)
+    private workspaceMemberRepository: Repository<WorkspaceMember>
   ) { }
 
   async create(createWorkspaceDto: CreateWorkspaceDto) {
     const workspace = this.workspaceRepository.create(createWorkspaceDto);
-    return WorkspaceMapper.toResponse(await this.workspaceRepository.save(workspace));
+
+    const savedWorkspace = WorkspaceMapper.toResponse(await this.workspaceRepository.save(workspace));
+
+    const ownerWorkspaceMember = this.workspaceMemberRepository.create({
+      workspaceId: savedWorkspace.id,
+      userId: savedWorkspace.ownerId,
+      role: WorkspaceMemberRole.OWNER,
+    });
+
+    await this.workspaceMemberRepository.save(ownerWorkspaceMember);
+
+    return savedWorkspace;
   }
 
   async findAll() {

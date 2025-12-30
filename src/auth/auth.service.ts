@@ -6,11 +6,14 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './types/jwt-payload';
 import { AuthException } from 'src/common/exceptions/auth.exception';
+import { UserRole } from "src/auth/enums/role.enum";
+import { WorkspaceMembersService } from 'src/workspace-members/workspace-members.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UsersService,
+        private readonly workspaceMembersService: WorkspaceMembersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService
     ) {
@@ -102,16 +105,24 @@ export class AuthService {
     }
 
     async getTokens(userId: string) {
+        const ownerWorkspaceMember = await this.workspaceMembersService.findOneByUserId(userId);
+
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync(
-                { sub: userId } as JwtPayload,
+                {
+                    sub: userId,
+                    role: [UserRole.USER, ownerWorkspaceMember.role]
+                } as JwtPayload,
                 {
                     secret: this.configService.get<string>('JWT_SECRET'),
                     expiresIn: (this.configService.get<string>('JWT_EXPIRES_IN') ?? '60s') as any,
                 },
             ),
             this.jwtService.signAsync(
-                { sub: userId } as JwtPayload,
+                {
+                    sub: userId,
+                    role: [UserRole.USER, ownerWorkspaceMember.role]
+                } as JwtPayload,
                 {
                     secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
                     expiresIn: (this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') ?? '1d') as any,

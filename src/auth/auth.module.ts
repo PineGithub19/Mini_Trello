@@ -5,10 +5,12 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './guards/auth.guard';
+import { WorkspaceMembersModule } from 'src/workspace-members/workspace-members.module';
 
 @Module({
   imports: [
     UsersModule,
+    WorkspaceMembersModule,
     JwtModule.register({ global: true }),
   ],
   controllers: [AuthController],

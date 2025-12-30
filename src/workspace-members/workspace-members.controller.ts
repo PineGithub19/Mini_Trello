@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
-import { WorkspaceMember } from './entities/workspace-member.entity';
 import { WorkspaceMembersService } from './workspace-members.service';
 import { CreateWorkspaceMemberDto } from './dto/create-workspace-member.dto';
 import { UpdateWorkspaceMemberDto } from './dto/update-workspace-member.dto';
 import { WorkspaceMemberResponse } from './response/workspace-member.response';
 import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
+import { Roles } from 'src/auth/decorators/roles/roles.decorator';
+import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 
 @ApiTags('Workspace Members')
 @ApiBearerAuth()
@@ -14,6 +16,8 @@ export class WorkspaceMembersController {
   constructor(private readonly workspaceMembersService: WorkspaceMembersService) { }
 
   @Post()
+  @Roles(WorkspaceMemberRole.OWNER)
+  @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Add a new member to workspace', description: 'Adds a user to a workspace.' })
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 201, description: 'The member has been successfully added.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
@@ -22,6 +26,8 @@ export class WorkspaceMembersController {
   }
 
   @Get()
+  @Roles(WorkspaceMemberRole.OWNER)
+  @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Get all workspace members', description: 'Retrieves a list of all workspace members.' })
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'Return all workspace members.' })
   findAll() {
@@ -29,6 +35,8 @@ export class WorkspaceMembersController {
   }
 
   @Get(':id')
+  @Roles(WorkspaceMemberRole.OWNER)
+  @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Get a workspace member by id', description: 'Retrieves a specific workspace member by their ID.' })
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'Return the workspace member.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
@@ -38,6 +46,8 @@ export class WorkspaceMembersController {
   }
 
   @Patch(':id')
+  @Roles(WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Update a workspace member', description: 'Updates the details of a workspace member.' })
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'The member has been successfully updated.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
@@ -47,6 +57,8 @@ export class WorkspaceMembersController {
   }
 
   @Delete(':id')
+  @Roles(WorkspaceMemberRole.OWNER)
+  @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Remove a member from workspace', description: 'Removes a member from a workspace.' })
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'The member has been successfully removed.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })

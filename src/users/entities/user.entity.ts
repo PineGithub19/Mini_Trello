@@ -12,11 +12,7 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
-
-export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { UserRole } from 'src/auth/enums/role.enum';
 
 @Entity('users')
 export class User {

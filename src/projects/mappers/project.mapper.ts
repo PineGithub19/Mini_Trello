@@ -10,7 +10,7 @@ export class ProjectMapper {
             createdAt: project.createdAt,
             updatedAt: project.updatedAt,
             workspaceId: project.workspaceId,
-            createdById: project.createdById,
+            createdById: project.createdBy,
         };
     }
 

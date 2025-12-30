@@ -32,6 +32,14 @@ export class WorkspaceMembersService {
     return WorkspaceMemberMapper.toResponse(workspaceMember);
   }
 
+  async findOneByUserId(userId: string) {
+    const workspaceMember = await this.workspaceMemberRepository.findOne({ where: { userId } });
+    if (!workspaceMember) {
+      throw new WorkspaceMemberException('Workspace member not found');
+    }
+    return WorkspaceMemberMapper.toResponse(workspaceMember);
+  }
+
   async update(id: string, updateWorkspaceMemberDto: UpdateWorkspaceMemberDto) {
     const workspaceMember = await this.workspaceMemberRepository.findOne({ where: { id } });
     if (!workspaceMember) {
