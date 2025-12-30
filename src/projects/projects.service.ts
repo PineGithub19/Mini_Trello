@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { ProjectMapper } from './mappers/project.mapper';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ProjectException } from 'src/common/exceptions/project.exception';
 
 @Injectable()
 export class ProjectsService {
@@ -25,7 +26,7 @@ export class ProjectsService {
   async findOne(id: string) {
     const project = await this.projectRepository.findOne({ where: { id } });
     if (!project) {
-      throw new Error('Project not found');
+      throw new ProjectException('Project not found');
     }
     return ProjectMapper.toResponse(project);
   }
@@ -33,7 +34,7 @@ export class ProjectsService {
   async update(id: string, updateProjectDto: UpdateProjectDto) {
     const project = await this.projectRepository.findOne({ where: { id } });
     if (!project) {
-      throw new Error('Project not found');
+      throw new ProjectException('Project not found');
     }
     await this.projectRepository.update({ id }, updateProjectDto);
     return this.findOne(id);
@@ -42,7 +43,7 @@ export class ProjectsService {
   async remove(id: string) {
     const project = await this.projectRepository.findOne({ where: { id } });
     if (!project) {
-      throw new Error('Project not found');
+      throw new ProjectException('Project not found');
     }
     await this.projectRepository.delete({ id });
     return ProjectMapper.toResponse(project);

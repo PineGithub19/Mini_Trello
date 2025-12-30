@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { postgresConfig } from './configs/db-config.config';
 import { AuthModule } from './auth/auth.module';
+import { TaskCommentsModule } from './task-comments/task-comments.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forRoot(postgresConfig),
     AuthModule,
+    TaskCommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

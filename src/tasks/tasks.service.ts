@@ -5,6 +5,7 @@ import { TaskMapper } from './mappers/task.mapper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
+import { TaskException } from 'src/common/exceptions/task.exception';
 
 @Injectable()
 export class TasksService {
@@ -25,7 +26,7 @@ export class TasksService {
   async findOne(id: string) {
     const task = await this.taskRepository.findOne({ where: { id } });
     if (!task) {
-      throw new Error('Task not found');
+      throw new TaskException('Task not found');
     }
     return TaskMapper.toResponse(task);
   }
@@ -33,7 +34,7 @@ export class TasksService {
   async update(id: string, updateTaskDto: UpdateTaskDto) {
     const task = await this.taskRepository.findOne({ where: { id } });
     if (!task) {
-      throw new Error('Task not found');
+      throw new TaskException('Task not found');
     }
     await this.taskRepository.update({ id }, updateTaskDto);
     return this.findOne(id);
@@ -42,7 +43,7 @@ export class TasksService {
   async remove(id: string) {
     const task = await this.taskRepository.findOne({ where: { id } });
     if (!task) {
-      throw new Error('Task not found');
+      throw new TaskException('Task not found');
     }
     await this.taskRepository.delete({ id });
     return TaskMapper.toResponse(task);

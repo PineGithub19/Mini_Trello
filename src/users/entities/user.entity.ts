@@ -13,6 +13,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { UserRole } from 'src/auth/enums/role.enum';
+import { TaskComment } from 'src/task-comments/entities/task-comment.entity';
 
 @Entity('users')
 export class User {
@@ -61,6 +62,9 @@ export class User {
 
   @OneToMany(() => Task, (task) => task.assignedTo)
   assignedTasks: Task[];
+
+  @OneToMany(() => TaskComment, (taskComment) => taskComment.user)
+  comments: TaskComment[];
 
   @BeforeInsert()
   hashPassword() {

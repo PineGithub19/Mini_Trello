@@ -1,6 +1,7 @@
 import { Project } from "src/projects/entities/project.entity";
+import { TaskComment } from "src/task-comments/entities/task-comment.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 export enum TaskStatus {
   TODO = 'TODO',
@@ -72,5 +73,10 @@ export class Task {
   })
   @JoinColumn({ name: 'assigned_to' })
   assignedTo: User | null;
+
+  /* ---------------- COMMENTS ---------------- */
+
+  @OneToMany(() => TaskComment, (taskComment) => taskComment.task)
+  comments: TaskComment[];
 }
 
