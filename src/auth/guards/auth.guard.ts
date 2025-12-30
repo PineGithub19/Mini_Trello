@@ -19,31 +19,40 @@ export class AuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
-      return true;
-    }
+    if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+
+    const token =
+      this.extractTokenFromHeader(request) ||
+      this.extractTokenFromCookie(request);
+
     if (!token) {
-      throw new AuthException('Access Denied', 401);
+      throw new AuthException('Access token missing', 401);
     }
+
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: this.configService.get<string>('JWT_SECRET')
-        }
-      );
-      request['user'] = payload;
-    } catch {
-      throw new AuthException('Access Denied', 401);
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+
+      request.user = payload;
+
+      return true;
+    } catch (err) {
+      throw new AuthException('Invalid or expired token', 401);
     }
-    return true;
   }
 
   private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    const auth = request.headers.authorization;
+    if (!auth) return undefined;
+
+    const [type, token] = auth.split(' ');
     return type === 'Bearer' ? token : undefined;
+  }
+
+  private extractTokenFromCookie(request: Request): string | undefined {
+    return request.cookies?.access_token;
   }
 }

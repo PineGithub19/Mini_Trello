@@ -105,13 +105,11 @@ export class AuthService {
     }
 
     async getTokens(userId: string) {
-        const ownerWorkspaceMember = await this.workspaceMembersService.findOneByUserId(userId);
-
         const [access_token, refresh_token] = await Promise.all([
             this.jwtService.signAsync(
                 {
                     sub: userId,
-                    role: [UserRole.USER, ownerWorkspaceMember.role]
+                    role: [UserRole.USER]
                 } as JwtPayload,
                 {
                     secret: this.configService.get<string>('JWT_SECRET'),
@@ -121,7 +119,7 @@ export class AuthService {
             this.jwtService.signAsync(
                 {
                     sub: userId,
-                    role: [UserRole.USER, ownerWorkspaceMember.role]
+                    role: [UserRole.USER]
                 } as JwtPayload,
                 {
                     secret: this.configService.get<string>('JWT_REFRESH_SECRET'),

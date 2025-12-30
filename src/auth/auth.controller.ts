@@ -10,7 +10,7 @@ import { Public } from './decorators/is-public/is-public.decorator';
 import { RefreshDto } from './dto/refresh.dto';
 import { LogoutDto } from './dto/logout.dto';
 
-import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
+import { ApiResponseWithData } from 'src/common/decorators/response-with-data.decorator';
 
 @Controller('auth')
 export class AuthController {

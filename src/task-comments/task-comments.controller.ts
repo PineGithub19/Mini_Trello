@@ -5,9 +5,11 @@ import { UpdateTaskCommentDto } from './dto/update-task-comment.dto';
 import { Roles } from 'src/auth/decorators/roles/roles.decorator';
 import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
-import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
+import { ApiResponseWithData } from 'src/common/decorators/response-with-data.decorator';
 import { TaskCommentResponse } from './response/task-comments.response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { WorkspaceMembersRoles } from 'src/auth/decorators/roles/workspace-members-roles.decorator';
+import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-members.guard';
 
 @Controller('task-comments')
 @ApiTags('Task Comments')
@@ -16,8 +18,8 @@ export class TaskCommentsController {
   constructor(private readonly taskCommentsService: TaskCommentsService) { }
 
   @Post()
-  @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
-  @UseGuards(RolesGuard)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Create a task comment', description: 'Creates a new comment for a specific task.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 201, description: 'Created task comment' })
   create(@Body() createTaskCommentDto: CreateTaskCommentDto) {
@@ -25,8 +27,8 @@ export class TaskCommentsController {
   }
 
   @Get()
-  @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
-  @UseGuards(RolesGuard)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Find all task comments', description: 'Retrieves all task comments.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 200, description: 'Found task comments' })
   findAll() {
@@ -34,8 +36,8 @@ export class TaskCommentsController {
   }
 
   @Get(':id')
-  @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
-  @UseGuards(RolesGuard)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Find a task comment', description: 'Retrieves a single task comment by its unique identifier.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 200, description: 'Found task comment' })
   findOne(@Param('id') id: string) {
@@ -43,8 +45,8 @@ export class TaskCommentsController {
   }
 
   @Patch(':id')
-  @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
-  @UseGuards(RolesGuard)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Update a task comment', description: 'Updates an existing task comment.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 200, description: 'Updated task comment' })
   update(@Param('id') id: string, @Body() updateTaskCommentDto: UpdateTaskCommentDto) {
@@ -52,8 +54,8 @@ export class TaskCommentsController {
   }
 
   @Delete(':id')
-  @Roles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
-  @UseGuards(RolesGuard)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Delete a task comment', description: 'Deletes a task comment by its unique identifier.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 200, description: 'Deleted task comment' })
   remove(@Param('id') id: string) {

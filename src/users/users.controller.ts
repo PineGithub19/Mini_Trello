@@ -1,18 +1,28 @@
-import { Controller, Get, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiResponseWithData } from 'src/common/decorators/ResponseWithData.decorator';
+import { ApiResponseWithData } from 'src/common/decorators/response-with-data.decorator';
 import { UserResponse } from './response/user.response';
 import { Roles } from 'src/auth/decorators/roles/roles.decorator';
 import { UserRole } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
+
+  @Get('me')
+  @Roles(UserRole.USER)
+  @UseGuards(RolesGuard)
+  @ApiOperation({ summary: 'Get current user', description: 'Retrieves the current user.' })
+  @ApiResponseWithData(UserResponse, { status: 200, description: 'Return the current user.' })
+  findMe(@CurrentUser() user: { id: string }) {
+    return this.usersService.findMe(user.id);
+  }
 
   @Get()
   @Roles(UserRole.ADMIN)

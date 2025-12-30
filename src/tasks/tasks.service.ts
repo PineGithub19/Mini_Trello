@@ -6,16 +6,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskException } from 'src/common/exceptions/task.exception';
+import { EventsService } from 'src/events/events.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
-    private taskRepository: Repository<Task>
+    private taskRepository: Repository<Task>,
+    private eventsService: EventsService
   ) { }
 
   async create(createTaskDto: CreateTaskDto) {
     const task = this.taskRepository.create(createTaskDto);
+
+    this.eventsService.emit({
+      message: 'A task was added',
+      data: task,
+    });
+
     return TaskMapper.toResponse(await this.taskRepository.save(task));
   }
 

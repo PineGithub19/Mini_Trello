@@ -20,6 +20,10 @@ export class UsersService {
     return UserMapper.toResponse(await this.userRepository.save(user));
   }
 
+  async findMe(id: string) {
+    return this.findUserById(id);
+  }
+
   async findAll() {
     return UserMapper.toResponseList(await this.userRepository.find());
   }
