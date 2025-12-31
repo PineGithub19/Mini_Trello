@@ -1,0 +1,34 @@
+networks:
+  mini-trello-net:
+    name: mini-trello-net
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: mini-trello-postgres-data
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: mini-trello-postgres
+    restart: unless-stopped
+
+    networks:
+      - mini-trello-net
+
+    ports:
+      - "${DATABASE_PORT}:5432"
+
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
