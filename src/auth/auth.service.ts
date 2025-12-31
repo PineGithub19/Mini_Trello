@@ -107,7 +107,7 @@ export class AuthService {
             this.jwtService.signAsync(
                 {
                     sub: userId,
-                    role: [UserRole.USER]
+                    roles: [UserRole.USER]
                 } as JwtPayload,
                 {
                     secret: this.configService.get<string>('JWT_SECRET'),
@@ -117,7 +117,7 @@ export class AuthService {
             this.jwtService.signAsync(
                 {
                     sub: userId,
-                    role: [UserRole.USER]
+                    roles: [UserRole.USER]
                 } as JwtPayload,
                 {
                     secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
