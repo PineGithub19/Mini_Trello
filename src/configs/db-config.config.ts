@@ -1,19 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Project } from 'src/projects/entities/project.entity';
-import { TaskComment } from 'src/task-comments/entities/task-comment.entity';
-import { Task } from 'src/tasks/entities/task.entity';
-import { User } from 'src/users/entities/user.entity';
-import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member.entity';
-import { Workspace } from 'src/workspaces/entities/workspace.entity';
+import { ConfigService } from '@nestjs/config';
 
-export const postgresConfig: TypeOrmModuleOptions = {
+export const postgresConfig = (
+  config: ConfigService,
+): TypeOrmModuleOptions => ({
   type: 'postgres',
-  host: process.env.DATABASE_HOST || 'localhost',
-  port: Number(process.env.DATABASE_PORT) || 5432,
-  username: process.env.DATABASE_USER || 'postgres',
-  password: process.env.DATABASE_PASSWORD || 'postgres',
-  database: process.env.DATABASE_NAME || 'mini_trello',
-  entities: [User, Project, Workspace, WorkspaceMember, Task, TaskComment],
+  host: config.get<string>('DATABASE_HOST', 'localhost'),
+  port: config.get<number>('DATABASE_PORT', 5432),
+  username: config.get<string>('DATABASE_USER', 'postgres'),
+  password: config.get<string>('DATABASE_PASSWORD', 'postgres'),
+  database: config.get<string>('DATABASE_NAME', 'mini_trello'),
   autoLoadEntities: true,
-  synchronize: true, // for dev
-};
+  synchronize: true, // dev only
+});

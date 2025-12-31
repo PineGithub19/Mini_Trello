@@ -7,13 +7,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './types/jwt-payload';
 import { AuthException } from 'src/common/exceptions/auth.exception';
 import { UserRole } from "src/auth/enums/role.enum";
-import { WorkspaceMembersService } from 'src/workspace-members/workspace-members.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly usersService: UsersService,
-        private readonly workspaceMembersService: WorkspaceMembersService,
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService
     ) {
