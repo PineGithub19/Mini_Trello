@@ -30,7 +30,10 @@ export class AuthService {
             throw new AuthException('User already exists', 409);
         }
 
-        return this.usersService.create(createUserDto);
+        const newUser = await this.usersService.create(createUserDto);
+        const tokens = await this.getTokens(newUser.id);
+        await this.updateRefreshToken(newUser.id, tokens.refresh_token);
+        return tokens;
     }
 
     async login(email: string, password: string) {

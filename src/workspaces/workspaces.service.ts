@@ -8,6 +8,8 @@ import { WorkspaceMapper } from './mappers/workspace.mapper';
 import { WorkspaceException } from 'src/common/exceptions/workspace.exception';
 import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member.entity';
 import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
+import { PaginationOptionsDto } from 'src/common/dto/pagination-options.dto';
+import { createPagination } from 'src/common/utils/pagination.util';
 
 @Injectable()
 export class WorkspacesService {
@@ -34,8 +36,22 @@ export class WorkspacesService {
     return savedWorkspace;
   }
 
-  async findAll() {
-    return WorkspaceMapper.toResponseList(await this.workspaceRepository.find());
+  async findAll(ownerId: string, paginationOptions: PaginationOptionsDto) {
+    const [entities, itemCount] = await this.workspaceRepository.findAndCount({
+      where: { ownerId },
+      skip: paginationOptions.skip,
+      take: paginationOptions.limit,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return createPagination(
+      WorkspaceMapper.toResponseList(entities),
+      itemCount,
+      paginationOptions.page,
+      paginationOptions.limit,
+    );
   }
 
   async findOne(id: string) {

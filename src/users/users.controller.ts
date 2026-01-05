@@ -8,6 +8,7 @@ import { Roles } from 'src/auth/decorators/roles/roles.decorator';
 import { UserRole } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/auth/types/jwt-payload';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -20,8 +21,8 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @ApiOperation({ summary: 'Get current user', description: 'Retrieves the current user.' })
   @ApiResponseWithData(UserResponse, { status: 200, description: 'Return the current user.' })
-  findMe(@CurrentUser() user: { id: string }) {
-    return this.usersService.findMe(user.id);
+  findMe(@CurrentUser() user: JwtPayload) {
+    return this.usersService.findMe(user.sub);
   }
 
   @Get()

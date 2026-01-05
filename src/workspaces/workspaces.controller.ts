@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { WorkspacesService } from './workspaces.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
@@ -11,6 +11,9 @@ import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
 import { UserRole } from 'src/auth/enums/role.enum';
 import { WorkspaceMembersRoles } from 'src/auth/decorators/roles/workspace-members-roles.decorator';
 import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-members.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/auth/types/jwt-payload';
+import { PaginationOptionsDto } from 'src/common/dto/pagination-options.dto';
 
 @ApiTags('Workspaces')
 @ApiBearerAuth()
@@ -24,7 +27,11 @@ export class WorkspacesController {
   @ApiOperation({ summary: 'Create a new workspace', description: 'Creates a new workspace for the user.' })
   @ApiResponseWithData(WorkspaceResponse, { status: 201, description: 'The workspace has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createWorkspaceDto: CreateWorkspaceDto) {
+  create(@Body() createWorkspaceDto: CreateWorkspaceDto, @CurrentUser() user: JwtPayload) {
+    if (!createWorkspaceDto.ownerId) {
+      createWorkspaceDto.ownerId = user.sub;
+    }
+
     return this.workspacesService.create(createWorkspaceDto);
   }
 
@@ -33,8 +40,8 @@ export class WorkspacesController {
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all workspaces', description: 'Retrieves a list of all workspaces.' })
   @ApiResponseWithData(WorkspaceResponse, { status: 200, description: 'Return all workspaces.' })
-  findAll() {
-    return this.workspacesService.findAll();
+  findAll(@CurrentUser() user: JwtPayload, @Query() paginationOptions: PaginationOptionsDto) {
+    return this.workspacesService.findAll(user.sub, paginationOptions);
   }
 
   @Get(':id')

@@ -3,6 +3,7 @@ import {
   IsString,
   MinLength,
   MaxLength,
+  IsStrongPassword,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -22,5 +23,17 @@ export class CreateUserDto {
   @IsString()
   @MinLength(8)
   @MaxLength(20, { message: 'Password must be at most 20 characters long' })
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+    },
+    {
+      message: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character',
+    }
+  )
   password: string;
 }

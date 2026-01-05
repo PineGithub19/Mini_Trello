@@ -1,6 +1,5 @@
 import { Controller } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { Post } from '@nestjs/common';
 import { Body } from '@nestjs/common';
@@ -20,7 +19,7 @@ export class AuthController {
   @Public()
   @Post('register')
   @ApiOperation({ summary: 'Register a new user', description: 'Registers a new user and returns the user details.' })
-  @ApiResponseWithData(User, { status: 201, description: 'User registered successfully.' })
+  @ApiResponseWithData(AuthResponse, { status: 201, description: 'User registered successfully.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
