@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { ProjectResponse } from './response/project.response';
 import { ApiResponseWithData } from 'src/common/decorators/response-with-data.decorator';
@@ -11,6 +11,10 @@ import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import { WorkspaceMembersRoles } from 'src/auth/decorators/roles/workspace-members-roles.decorator';
 import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-members.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from '@supabase/supabase-js';
+import { PaginationOptionsDto } from 'src/common/dto/pagination-options.dto';
+import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 
 @ApiTags('Projects')
 @ApiBearerAuth()
@@ -24,7 +28,10 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Create a new project', description: 'Creates a new project within a workspace.' })
   @ApiResponseWithData(ProjectResponse, { status: 201, description: 'The project has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createProjectDto: CreateProjectDto) {
+  create(@Body() createProjectDto: CreateProjectDto, @CurrentUser() user: JwtPayload) {
+    if (!createProjectDto.createdBy) {
+      createProjectDto.createdBy = user.sub;
+    }
     return this.projectsService.create(createProjectDto);
   }
 
@@ -32,9 +39,9 @@ export class ProjectsController {
   @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all projects', description: 'Retrieves a list of all projects.' })
-  @ApiResponseWithData(ProjectResponse, { status: 200, description: 'Return all projects.' })
-  findAll() {
-    return this.projectsService.findAll();
+  @ApiPaginatedResponse(ProjectResponse, { status: 200, description: 'Return all projects.' })
+  findAll(@Query('workspaceId') workspaceId: string, @Query() paginationOptions: PaginationOptionsDto) {
+    return this.projectsService.findAll(workspaceId, paginationOptions);
   }
 
   @Get(':id')

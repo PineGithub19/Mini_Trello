@@ -12,6 +12,7 @@ import { postgresConfig } from './configs/db-config.config';
 import { AuthModule } from './auth/auth.module';
 import { TaskCommentsModule } from './task-comments/task-comments.module';
 import { EventsModule } from './events/events.module';
+import { SupabaseModule } from './supabase/supabase.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { EventsModule } from './events/events.module';
     AuthModule,
     TaskCommentsModule,
     EventsModule,
+    SupabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

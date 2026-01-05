@@ -14,6 +14,7 @@ import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-membe
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/auth/types/jwt-payload';
 import { PaginationOptionsDto } from 'src/common/dto/pagination-options.dto';
+import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 
 @ApiTags('Workspaces')
 @ApiBearerAuth()
@@ -39,7 +40,7 @@ export class WorkspacesController {
   @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all workspaces', description: 'Retrieves a list of all workspaces.' })
-  @ApiResponseWithData(WorkspaceResponse, { status: 200, description: 'Return all workspaces.' })
+  @ApiPaginatedResponse(WorkspaceResponse, { status: 200, description: 'Return all workspaces.' })
   findAll(@CurrentUser() user: JwtPayload, @Query() paginationOptions: PaginationOptionsDto) {
     return this.workspacesService.findAll(user.sub, paginationOptions);
   }

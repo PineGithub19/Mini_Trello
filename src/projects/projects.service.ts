@@ -6,6 +6,8 @@ import { Project } from './entities/project.entity';
 import { ProjectMapper } from './mappers/project.mapper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectException } from 'src/common/exceptions/project.exception';
+import { createPagination } from 'src/common/utils/pagination.util';
+import { PaginationOptionsDto } from 'src/common/dto/pagination-options.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -19,8 +21,20 @@ export class ProjectsService {
     return ProjectMapper.toResponse(await this.projectRepository.save(project));
   }
 
-  async findAll() {
-    return ProjectMapper.toResponseList(await this.projectRepository.find());
+  async findAll(workspaceId: string, paginationOptions: PaginationOptionsDto) {
+    const [entities, itemCount] = await this.projectRepository.findAndCount({
+      where: { workspaceId },
+      skip: paginationOptions.skip,
+      take: paginationOptions.limit,
+      order: { createdAt: 'DESC' }
+    });
+
+    return createPagination(
+      ProjectMapper.toResponseList(entities),
+      itemCount,
+      paginationOptions.page,
+      paginationOptions.limit,
+    );
   }
 
   async findOne(id: string) {

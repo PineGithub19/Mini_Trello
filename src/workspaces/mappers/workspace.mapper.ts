@@ -6,6 +6,7 @@ export class WorkspaceMapper {
         return {
             id: workspace.id,
             name: workspace.name,
+            background: workspace.background,
             createdAt: workspace.createdAt,
             updatedAt: workspace.updatedAt,
             ownerId: workspace.ownerId,

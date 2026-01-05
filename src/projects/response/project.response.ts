@@ -8,6 +8,9 @@ export class ProjectResponse {
     name: string;
 
     @ApiProperty()
+    background: string;
+
+    @ApiProperty()
     description: string;
 
     @ApiProperty()

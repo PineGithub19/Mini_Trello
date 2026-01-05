@@ -11,6 +11,9 @@ export class Project {
     @Column({ type: 'varchar', length: 255, name: 'name' })
     name: string;
 
+    @Column({ type: 'varchar', length: 255, name: 'background', nullable: true, default: null })
+    background: string;
+
     @Column({ type: 'text', name: 'description' })
     description: string;
 

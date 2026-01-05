@@ -8,6 +8,9 @@ export class WorkspaceResponse {
     name: string;
 
     @ApiProperty()
+    background: string;
+
+    @ApiProperty()
     createdAt: Date;
 
     @ApiProperty()

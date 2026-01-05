@@ -34,6 +34,9 @@ export class User {
   @Column({ type: 'varchar', length: 255, name: 'name' })
   name: string;
 
+  @Column({ type: 'varchar', length: 255, name: 'avatar', default: null })
+  avatar: string | null;
+
   @Column({
     type: 'enum',
     enum: UserRole,
@@ -45,10 +48,10 @@ export class User {
   @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
   updatedAt: Date;
 
   @OneToMany(() => Workspace, (workspace) => workspace.owner)

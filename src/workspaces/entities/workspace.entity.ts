@@ -7,13 +7,16 @@ export class Workspace {
     @PrimaryGeneratedColumn('uuid', { name: 'id' })
     id: string;
 
-    @Column({ name: 'name' })
+    @Column({ type: 'varchar', length: 255, name: 'name' })
     name: string;
 
-    @CreateDateColumn({ name: 'created_at' })
+    @Column({ type: 'varchar', length: 255, name: 'background', nullable: true, default: null })
+    background: string;
+
+    @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
     createdAt: Date;
 
-    @UpdateDateColumn({ name: 'updated_at' })
+    @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
     updatedAt: Date;
 
     @Column({ type: 'uuid', name: 'owner_id' })
