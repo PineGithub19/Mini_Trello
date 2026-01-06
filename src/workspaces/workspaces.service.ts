@@ -3,7 +3,7 @@ import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workspace } from './entities/workspace.entity';
-import { Repository } from 'typeorm';
+import { Repository, In, Not } from 'typeorm';
 import { WorkspaceMapper } from './mappers/workspace.mapper';
 import { WorkspaceException } from 'src/common/exceptions/workspace.exception';
 import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member.entity';
@@ -39,6 +39,26 @@ export class WorkspacesService {
   async findAll(ownerId: string, paginationOptions: PaginationOptionsDto) {
     const [entities, itemCount] = await this.workspaceRepository.findAndCount({
       where: { ownerId },
+      skip: paginationOptions.skip,
+      take: paginationOptions.limit,
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    return createPagination(
+      WorkspaceMapper.toResponseList(entities),
+      itemCount,
+      paginationOptions.page,
+      paginationOptions.limit,
+    );
+  }
+
+  async findAllColaboratedWorkspaces(memberId: string, paginationOptions: PaginationOptionsDto) {
+    const workspaceIds = await this.workspaceMemberRepository.find({ select: ['workspaceId'], where: { userId: memberId } });
+
+    const [entities, itemCount] = await this.workspaceRepository.findAndCount({
+      where: { id: In(workspaceIds.map((id) => id.workspaceId)), ownerId: Not(memberId) },
       skip: paginationOptions.skip,
       take: paginationOptions.limit,
       order: {

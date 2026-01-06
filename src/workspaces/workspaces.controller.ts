@@ -45,6 +45,15 @@ export class WorkspacesController {
     return this.workspacesService.findAll(user.sub, paginationOptions);
   }
 
+  @Get('colaborated')
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
+  @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
+  @ApiOperation({ summary: 'Get all colaborated workspaces', description: 'Retrieves a list of all colaborated workspaces.' })
+  @ApiPaginatedResponse(WorkspaceResponse, { status: 200, description: 'Return all colaborated workspaces.' })
+  findAllColaboratedWorkspaces(@CurrentUser() user: JwtPayload, @Query() paginationOptions: PaginationOptionsDto) {
+    return this.workspacesService.findAllColaboratedWorkspaces(user.sub, paginationOptions);
+  }
+
   @Get(':id')
   @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)

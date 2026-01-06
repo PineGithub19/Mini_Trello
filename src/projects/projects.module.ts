@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
 import { WorkspaceMembersService } from 'src/workspace-members/workspace-members.service';
 import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project, WorkspaceMember])],
+  imports: [UsersModule, TypeOrmModule.forFeature([Project, WorkspaceMember])],
   controllers: [ProjectsController],
   providers: [ProjectsService, WorkspaceMembersService],
 })

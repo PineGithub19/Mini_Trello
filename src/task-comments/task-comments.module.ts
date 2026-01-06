@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskComment } from './entities/task-comment.entity';
 import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member.entity';
 import { WorkspaceMembersService } from 'src/workspace-members/workspace-members.service';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TaskComment, WorkspaceMember])],
+  imports: [UsersModule, TypeOrmModule.forFeature([TaskComment, WorkspaceMember])],
   controllers: [TaskCommentsController],
   providers: [TaskCommentsService, WorkspaceMembersService],
 })

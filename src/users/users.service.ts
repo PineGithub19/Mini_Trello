@@ -36,6 +36,14 @@ export class UsersService {
     return UserMapper.toResponse(user);
   }
 
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UserException('User not found');
+    }
+    return UserMapper.toResponse(user);
+  }
+
   async findOne(id: string) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {

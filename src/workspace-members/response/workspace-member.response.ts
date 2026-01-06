@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UserResponse } from "src/users/response/user.response";
 import { WorkspaceMemberRole } from "src/auth/enums/role.enum";
 
 export class WorkspaceMemberResponse {
@@ -10,6 +11,9 @@ export class WorkspaceMemberResponse {
 
     @ApiProperty()
     userId: string;
+
+    @ApiProperty()
+    userInformation?: UserResponse;
 
     @ApiProperty()
     role: WorkspaceMemberRole;

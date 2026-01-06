@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { WorkspaceMembersService } from './workspace-members.service';
 import { CreateWorkspaceMemberDto } from './dto/create-workspace-member.dto';
@@ -9,6 +9,8 @@ import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import { WorkspaceMembersRoles } from 'src/auth/decorators/roles/workspace-members-roles.decorator';
 import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-members.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/auth/types/jwt-payload';
 
 @ApiTags('Workspace Members')
 @ApiBearerAuth()
@@ -22,17 +24,17 @@ export class WorkspaceMembersController {
   @ApiOperation({ summary: 'Add a new member to workspace', description: 'Adds a user to a workspace.' })
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 201, description: 'The member has been successfully added.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createWorkspaceMemberDto: CreateWorkspaceMemberDto) {
-    return this.workspaceMembersService.create(createWorkspaceMemberDto);
+  create(@Body() createWorkspaceMemberDto: CreateWorkspaceMemberDto, @CurrentUser() user: JwtPayload) {
+    return this.workspaceMembersService.create(createWorkspaceMemberDto, user.sub);
   }
 
   @Get()
   @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all workspace members', description: 'Retrieves a list of all workspace members.' })
-  @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'Return all workspace members.' })
-  findAll() {
-    return this.workspaceMembersService.findAll();
+  @ApiResponseWithData([WorkspaceMemberResponse], { status: 200, description: 'Return all workspace members.' })
+  findAll(@Query('workspaceId') workspaceId: string) {
+    return this.workspaceMembersService.findAll(workspaceId);
   }
 
   @Get(':id')
@@ -64,7 +66,7 @@ export class WorkspaceMembersController {
   @ApiResponseWithData(WorkspaceMemberResponse, { status: 200, description: 'The member has been successfully removed.' })
   @ApiResponse({ status: 404, description: 'Member not found.' })
   @ApiParam({ name: 'id', description: 'Member ID' })
-  remove(@Param('id') id: string) {
-    return this.workspaceMembersService.remove(id);
+  remove(@Param('id') id: string, @Query('workspaceId') workspaceId: string) {
+    return this.workspaceMembersService.remove(id, workspaceId);
   }
 }
