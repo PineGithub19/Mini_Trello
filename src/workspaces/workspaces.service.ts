@@ -20,8 +20,11 @@ export class WorkspacesService {
     private workspaceMemberRepository: Repository<WorkspaceMember>
   ) { }
 
-  async create(createWorkspaceDto: CreateWorkspaceDto) {
-    const workspace = this.workspaceRepository.create(createWorkspaceDto);
+  async create(createWorkspaceDto: CreateWorkspaceDto, ownerId: string) {
+    const workspace = this.workspaceRepository.create({
+      ...createWorkspaceDto,
+      ownerId,
+    });
 
     const savedWorkspace = WorkspaceMapper.toResponse(await this.workspaceRepository.save(workspace));
 

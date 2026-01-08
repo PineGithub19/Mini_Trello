@@ -27,11 +27,11 @@ export class TaskResponse {
     updatedAt: Date;
 
     @ApiProperty()
-    projectId: string;
+    listId: string;
 
     @ApiProperty()
     createdById: string;
 
-    @ApiProperty({ nullable: true })
-    assignedToId: string | null;
+    @ApiProperty()
+    assignedToId: string;
 }

@@ -16,9 +16,14 @@ export class ProjectsService {
     private projectRepository: Repository<Project>
   ) { }
 
-  async create(createProjectDto: CreateProjectDto) {
-    const project = this.projectRepository.create(createProjectDto);
-    return ProjectMapper.toResponse(await this.projectRepository.save(project));
+  async create(createProjectDto: CreateProjectDto, createdById: string) {
+    const project = this.projectRepository.create({
+      ...createProjectDto,
+      createdBy: createdById,
+    });
+
+    const savedProject = ProjectMapper.toResponse(await this.projectRepository.save(project));
+    return savedProject;
   }
 
   async findAll(workspaceId: string, paginationOptions: PaginationOptionsDto) {

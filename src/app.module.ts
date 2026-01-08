@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { TaskCommentsModule } from './task-comments/task-comments.module';
 import { EventsModule } from './events/events.module';
 import { SupabaseModule } from './supabase/supabase.module';
+import { ListsModule } from './lists/lists.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { SupabaseModule } from './supabase/supabase.module';
     TaskCommentsModule,
     EventsModule,
     SupabaseModule,
+    ListsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

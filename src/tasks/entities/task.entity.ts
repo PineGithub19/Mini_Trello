@@ -1,3 +1,4 @@
+import { List } from "src/lists/entities/list.entity";
 import { Project } from "src/projects/entities/project.entity";
 import { TaskComment } from "src/task-comments/entities/task-comment.entity";
 import { User } from "src/users/entities/user.entity";
@@ -23,17 +24,20 @@ export class Task {
   @Column({ length: 255, type: 'varchar', name: 'title' })
   title: string;
 
-  @Column({ type: 'text', name: 'description' })
+  @Column({ type: 'text', name: 'description', default: "" })
   description: string;
 
-  @Column({ type: 'timestamp', name: 'due_date', nullable: true })
+  @Column({ type: 'timestamp', name: 'due_date', nullable: true, default: () => "CURRENT_TIMESTAMP + INTERVAL '1 day'", })
   dueDate: Date | null;
 
-  @Column({ type: 'enum', enum: TaskStatus, name: 'status' })
+  @Column({ type: 'enum', enum: TaskStatus, name: 'status', default: TaskStatus.TODO })
   status: TaskStatus;
 
-  @Column({ type: 'enum', enum: TaskPriority, name: 'priority' })
+  @Column({ type: 'enum', enum: TaskPriority, name: 'priority', default: TaskPriority.LOW })
   priority: TaskPriority;
+
+  @Column({ type: 'smallint', name: 'position' })
+  position: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -41,16 +45,14 @@ export class Task {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  /* ---------------- PROJECT ---------------- */
+  @Column({ type: 'uuid', name: 'list_id' })
+  listId: string;
 
-  @Column({ type: 'uuid', name: 'project_id' })
-  projectId: string;
-
-  @ManyToOne(() => Project, (project) => project.tasks, {
+  @ManyToOne(() => List, (list) => list.tasks, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'project_id' })
-  project: Project;
+  @JoinColumn({ name: 'list_id' })
+  list: List;
 
   /* ---------------- CREATED BY ---------------- */
 
@@ -65,14 +67,14 @@ export class Task {
 
   /* ---------------- ASSIGNED TO ---------------- */
 
-  @Column({ type: 'uuid', name: 'assigned_to', nullable: true })
-  assignedToId: string | null;
+  @Column({ type: 'uuid', name: 'assigned_to' })
+  assignedToId: string;
 
   @ManyToOne(() => User, (user) => user.assignedTasks, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'assigned_to' })
-  assignedTo: User | null;
+  assignedTo: User;
 
   /* ---------------- COMMENTS ---------------- */
 

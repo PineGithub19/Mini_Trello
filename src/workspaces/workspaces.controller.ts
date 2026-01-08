@@ -29,11 +29,7 @@ export class WorkspacesController {
   @ApiResponseWithData(WorkspaceResponse, { status: 201, description: 'The workspace has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createWorkspaceDto: CreateWorkspaceDto, @CurrentUser() user: JwtPayload) {
-    if (!createWorkspaceDto.ownerId) {
-      createWorkspaceDto.ownerId = user.sub;
-    }
-
-    return this.workspacesService.create(createWorkspaceDto);
+    return this.workspacesService.create(createWorkspaceDto, user.sub);
   }
 
   @Get()

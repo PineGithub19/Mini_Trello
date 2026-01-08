@@ -1,3 +1,4 @@
+import { List } from "src/lists/entities/list.entity";
 import { Task } from "src/tasks/entities/task.entity";
 import { User } from "src/users/entities/user.entity";
 import { Workspace } from "src/workspaces/entities/workspace.entity";
@@ -37,6 +38,6 @@ export class Project {
     @JoinColumn({ name: 'created_by', referencedColumnName: 'id' })
     user: User;
 
-    @OneToMany(() => Task, (task) => task.project, { onDelete: 'CASCADE' })
-    tasks: Task[];
+    @OneToMany(() => List, (list) => list.project, { onDelete: 'CASCADE' })
+    lists: List[];
 }

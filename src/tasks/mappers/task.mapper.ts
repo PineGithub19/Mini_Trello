@@ -12,7 +12,7 @@ export class TaskMapper {
             priority: task.priority,
             createdAt: task.createdAt,
             updatedAt: task.updatedAt,
-            projectId: task.projectId,
+            listId: task.listId,
             createdById: task.createdById,
             assignedToId: task.assignedToId,
         };

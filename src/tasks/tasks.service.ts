@@ -16,8 +16,26 @@ export class TasksService {
     private eventsService: EventsService
   ) { }
 
-  async create(createTaskDto: CreateTaskDto) {
-    const task = this.taskRepository.create(createTaskDto);
+  async create(createTaskDto: CreateTaskDto, userId: string) {
+    if (!createTaskDto.assignedToId) {
+      createTaskDto = {
+        ...createTaskDto,
+        assignedToId: userId,
+      }
+    }
+
+    const dto = {
+      ...createTaskDto,
+      createdById: userId,
+    }
+
+    const task = this.taskRepository.create(dto);
+
+    const lastPosition = await this.taskRepository.findOne({
+      where: { listId: createTaskDto.listId },
+      order: { position: 'DESC' }
+    });
+    task.position = lastPosition ? lastPosition.position + 1 : 0;
 
     this.eventsService.emit({
       message: 'A task was added',
@@ -27,8 +45,9 @@ export class TasksService {
     return TaskMapper.toResponse(await this.taskRepository.save(task));
   }
 
-  async findAll() {
-    return TaskMapper.toResponseList(await this.taskRepository.find());
+  async findAll(listId: string) {
+    const tasks = await this.taskRepository.find({ where: { listId } })
+    return TaskMapper.toResponseList(tasks);
   }
 
   async findOne(id: string) {

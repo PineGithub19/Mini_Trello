@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { TaskResponse } from './response/task.response';
 import { ApiResponseWithData } from 'src/common/decorators/response-with-data.decorator';
@@ -11,6 +11,8 @@ import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import { WorkspaceMembersRoles } from 'src/auth/decorators/roles/workspace-members-roles.decorator';
 import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-members.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/auth/types/jwt-payload';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
@@ -24,8 +26,8 @@ export class TasksController {
   @ApiOperation({ summary: 'Create a new task', description: 'Creates a new task within a project.' })
   @ApiResponseWithData(TaskResponse, { status: 201, description: 'The task has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  create(@Body() createTaskDto: CreateTaskDto, @CurrentUser() user: JwtPayload) {
+    return this.tasksService.create(createTaskDto, user.sub);
   }
 
   @Get()
@@ -33,8 +35,8 @@ export class TasksController {
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all tasks', description: 'Retrieves a list of all tasks.' })
   @ApiResponseWithData(TaskResponse, { status: 200, description: 'Return all tasks.' })
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(@Query('listId') listId: string) {
+    return this.tasksService.findAll(listId);
   }
 
   @Get(':id')

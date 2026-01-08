@@ -1,4 +1,4 @@
-import { IsString, IsUrl, IsUUID, MaxLength, MinLength } from "class-validator";
+import { IsString, IsUrl, MaxLength, MinLength } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateWorkspaceDto {
@@ -12,9 +12,4 @@ export class CreateWorkspaceDto {
     @IsString()
     @IsUrl()
     background?: string;
-
-    @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'The owner ID' })
-    @IsString()
-    @IsUUID()
-    ownerId?: string;
 }

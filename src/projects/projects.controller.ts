@@ -29,10 +29,7 @@ export class ProjectsController {
   @ApiResponseWithData(ProjectResponse, { status: 201, description: 'The project has been successfully created.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createProjectDto: CreateProjectDto, @CurrentUser() user: JwtPayload) {
-    if (!createProjectDto.createdBy) {
-      createProjectDto.createdBy = user.sub;
-    }
-    return this.projectsService.create(createProjectDto);
+    return this.projectsService.create(createProjectDto, user.sub);
   }
 
   @Get()
