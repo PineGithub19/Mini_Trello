@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UserResponse } from "src/users/response/user.response";
 
 export class TaskCommentResponse {
     @ApiProperty({ description: 'The unique identifier of the task comment' })
@@ -18,4 +19,7 @@ export class TaskCommentResponse {
 
     @ApiProperty({ description: 'The date and time when the comment was last updated' })
     updatedAt: Date;
+
+    @ApiProperty({ description: 'The user who created the comment' })
+    userInformation?: UserResponse;
 }

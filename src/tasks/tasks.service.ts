@@ -46,7 +46,7 @@ export class TasksService {
   }
 
   async findAll(listId: string) {
-    const tasks = await this.taskRepository.find({ where: { listId } })
+    const tasks = await this.taskRepository.find({ where: { listId }, order: { position: 'ASC' } })
     return TaskMapper.toResponseList(tasks);
   }
 

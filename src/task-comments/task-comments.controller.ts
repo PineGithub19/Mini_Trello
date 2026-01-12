@@ -10,6 +10,8 @@ import { TaskCommentResponse } from './response/task-comments.response';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WorkspaceMembersRoles } from 'src/auth/decorators/roles/workspace-members-roles.decorator';
 import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-members.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/auth/types/jwt-payload';
 
 @Controller('task-comments')
 @ApiTags('Task Comments')
@@ -22,17 +24,17 @@ export class TaskCommentsController {
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Create a task comment', description: 'Creates a new comment for a specific task.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 201, description: 'Created task comment' })
-  create(@Body() createTaskCommentDto: CreateTaskCommentDto) {
-    return this.taskCommentsService.create(createTaskCommentDto);
+  create(@Body() createTaskCommentDto: CreateTaskCommentDto, @CurrentUser() user: JwtPayload) {
+    return this.taskCommentsService.create(createTaskCommentDto, user.sub);
   }
 
-  @Get()
+  @Get('/all/:id')
   @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Find all task comments', description: 'Retrieves all task comments.' })
   @ApiResponseWithData(TaskCommentResponse, { status: 200, description: 'Found task comments' })
-  findAll() {
-    return this.taskCommentsService.findAll();
+  findAll(@Param('id') id: string) {
+    return this.taskCommentsService.findAll(id);
   }
 
   @Get(':id')

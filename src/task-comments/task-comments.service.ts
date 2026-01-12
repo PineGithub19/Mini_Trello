@@ -6,21 +6,28 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskCommentMapper } from './mappers/task-comments.mapper';
 import { TaskCommentsException } from 'src/common/exceptions/task-comments.exception';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TaskCommentsService {
   constructor(
     @InjectRepository(TaskComment)
     private readonly taskCommentRepository: Repository<TaskComment>,
+    private readonly userService: UsersService,
   ) { }
 
-  async create(createTaskCommentDto: CreateTaskCommentDto) {
-    const taskComment = this.taskCommentRepository.create(createTaskCommentDto);
+  async create(createTaskCommentDto: CreateTaskCommentDto, userId: string) {
+    const taskComment = this.taskCommentRepository.create({ ...createTaskCommentDto, createdBy: userId });
     return TaskCommentMapper.toResponse(await this.taskCommentRepository.save(taskComment));
   }
 
-  async findAll() {
-    return TaskCommentMapper.toResponseList(await this.taskCommentRepository.find());
+  async findAll(id: string) {
+    const taskComments = await this.taskCommentRepository.find({ where: { taskId: id }, order: { createdAt: 'DESC' } })
+    const taskCommentWithUserInformation = await Promise.all(taskComments.map(async (taskComment) => {
+      const userInformation = await this.userService.findOne(taskComment.createdBy);
+      return { ...taskComment, userInformation };
+    }));
+    return TaskCommentMapper.toDetailedResponseList(taskCommentWithUserInformation);
   }
 
   async findOne(id: string) {

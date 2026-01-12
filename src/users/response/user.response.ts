@@ -8,6 +8,9 @@ export class UserResponse {
     email: string;
 
     @ApiProperty()
+    avatar: string | null;
+
+    @ApiProperty()
     name: string;
 
     @ApiProperty()
