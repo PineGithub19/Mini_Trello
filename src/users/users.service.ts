@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { UserResponse } from './response/user.response';
 import { UserMapper } from './mappers/user.mapper';
 import { UserException } from 'src/common/exceptions/user.exception';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -68,6 +69,12 @@ export class UsersService {
     if (!user) {
       throw new UserException('User not found');
     }
+
+    if (updateUserDto.password) {
+      const hashedPassword = bcrypt.hashSync(updateUserDto.password, 10);
+      updateUserDto.password = hashedPassword;
+    }
+
     const updatedUser = await this.userRepository.update({ id }, updateUserDto);
     if (!updatedUser) {
       throw new UserException('User not found');

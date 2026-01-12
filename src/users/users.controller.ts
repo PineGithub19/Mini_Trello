@@ -45,6 +45,16 @@ export class UsersController {
     return this.usersService.findUserById(id);
   }
 
+  @Patch('me')
+  @Roles(UserRole.USER)
+  @UseGuards(RolesGuard)
+  @ApiOperation({ summary: 'Update current user', description: 'Updates the details of the current user.' })
+  @ApiResponseWithData(UserResponse, { status: 200, description: 'The user has been successfully updated.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  updateMe(@CurrentUser() user: JwtPayload, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(user.sub, updateUserDto);
+  }
+
   @Patch(':id')
   @Roles(UserRole.USER)
   @UseGuards(RolesGuard)

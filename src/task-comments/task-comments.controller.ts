@@ -12,9 +12,9 @@ import { WorkspaceMembersRoleGuard } from 'src/auth/guards/roles/workspace-membe
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/auth/types/jwt-payload';
 
-@Controller('task-comments')
 @ApiTags('Task Comments')
 @ApiBearerAuth()
+@Controller('task-comments')
 export class TaskCommentsController {
   constructor(private readonly taskCommentsService: TaskCommentsService) { }
 
@@ -27,7 +27,7 @@ export class TaskCommentsController {
     return this.taskCommentsService.create(createTaskCommentDto, user.sub);
   }
 
-  @Get('/all/:id')
+  @Get('all/:id')
   @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Find all task comments', description: 'Retrieves all task comments.' })
