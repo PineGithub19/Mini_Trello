@@ -29,7 +29,7 @@ export class WorkspaceMembersController {
   }
 
   @Get()
-  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all workspace members', description: 'Retrieves a list of all workspace members.' })
   @ApiResponseWithData([WorkspaceMemberResponse], { status: 200, description: 'Return all workspace members.' })

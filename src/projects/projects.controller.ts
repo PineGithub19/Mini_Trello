@@ -33,7 +33,7 @@ export class ProjectsController {
   }
 
   @Get()
-  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get all projects', description: 'Retrieves a list of all projects.' })
   @ApiPaginatedResponse(ProjectResponse, { status: 200, description: 'Return all projects.' })
@@ -42,7 +42,7 @@ export class ProjectsController {
   }
 
   @Get(':id')
-  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER)
+  @WorkspaceMembersRoles(WorkspaceMemberRole.OWNER, WorkspaceMemberRole.MEMBER)
   @UseGuards(RolesGuard, WorkspaceMembersRoleGuard)
   @ApiOperation({ summary: 'Get a project by id', description: 'Retrieves a specific project by its ID.' })
   @ApiResponseWithData(ProjectResponse, { status: 200, description: 'Return the project.' })

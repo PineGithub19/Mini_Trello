@@ -19,7 +19,7 @@ export class WorkspaceMembersRoleGuard implements CanActivate {
         if (!requiredRoles) return true;
 
         const request = context.switchToHttp().getRequest();
-        const userId = request.user.id;
+        const userId = request.user.sub;
         const workspaceId = request.params.workspaceId;
 
         const member = await this.workspaceMemberService.findMember(
