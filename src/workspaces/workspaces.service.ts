@@ -10,6 +10,7 @@ import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member
 import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
 import { PaginationOptionsDto } from 'src/common/dto/pagination-options.dto';
 import { createPagination } from 'src/common/utils/pagination.util';
+import { SearchService } from 'src/search/search.service';
 
 @Injectable()
 export class WorkspacesService {
@@ -17,7 +18,8 @@ export class WorkspacesService {
     @InjectRepository(Workspace)
     private workspaceRepository: Repository<Workspace>,
     @InjectRepository(WorkspaceMember)
-    private workspaceMemberRepository: Repository<WorkspaceMember>
+    private workspaceMemberRepository: Repository<WorkspaceMember>,
+    private readonly searchService: SearchService,
   ) { }
 
   async create(createWorkspaceDto: CreateWorkspaceDto, ownerId: string) {
@@ -26,7 +28,10 @@ export class WorkspacesService {
       ownerId,
     });
 
-    const savedWorkspace = WorkspaceMapper.toResponse(await this.workspaceRepository.save(workspace));
+    const savedWorkspace = await this.workspaceRepository.save(workspace);
+    await this.searchService.indexWorkspace(savedWorkspace);
+
+    const responseWorkspace = WorkspaceMapper.toResponse(savedWorkspace);
 
     const ownerWorkspaceMember = this.workspaceMemberRepository.create({
       workspaceId: savedWorkspace.id,
@@ -36,7 +41,7 @@ export class WorkspacesService {
 
     await this.workspaceMemberRepository.save(ownerWorkspaceMember);
 
-    return savedWorkspace;
+    return responseWorkspace;
   }
 
   async findAll(ownerId: string, paginationOptions: PaginationOptionsDto) {
@@ -92,10 +97,9 @@ export class WorkspacesService {
     if (!workspace) {
       throw new WorkspaceException('Workspace not found');
     }
-    const updatedWorkspace = await this.workspaceRepository.update({ id }, updateWorkspaceDto);
-    if (!updatedWorkspace) {
-      throw new WorkspaceException('Workspace not found');
-    }
+    const updatedWorkspace = await this.workspaceRepository.save({ ...workspace, ...updateWorkspaceDto });
+    await this.searchService.indexWorkspace(updatedWorkspace);
+
     return this.findOne(id);
   }
 
@@ -105,6 +109,7 @@ export class WorkspacesService {
       throw new WorkspaceException('Workspace not found');
     }
     await this.workspaceRepository.remove(workspace);
+    await this.searchService.remove(id);
     return this.findOne(id);
   }
 }

@@ -14,6 +14,8 @@ import { TaskCommentsModule } from './task-comments/task-comments.module';
 import { EventsModule } from './events/events.module';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ListsModule } from './lists/lists.module';
+import { LogstashModule } from './logstash/logstash.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { ListsModule } from './lists/lists.module';
     EventsModule,
     SupabaseModule,
     ListsModule,
+    LogstashModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],
