@@ -16,6 +16,7 @@ import { SupabaseModule } from './supabase/supabase.module';
 import { ListsModule } from './lists/lists.module';
 import { LogstashModule } from './logstash/logstash.module';
 import { SearchModule } from './search/search.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SearchModule } from './search/search.module';
     ListsModule,
     LogstashModule,
     SearchModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

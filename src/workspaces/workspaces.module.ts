@@ -7,9 +7,10 @@ import { WorkspaceMember } from 'src/workspace-members/entities/workspace-member
 import { WorkspaceMembersService } from 'src/workspace-members/workspace-members.service';
 import { UsersModule } from 'src/users/users.module';
 import { SearchModule } from 'src/search/search.module';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
-  imports: [UsersModule, TypeOrmModule.forFeature([Workspace, WorkspaceMember]), SearchModule],
+  imports: [UsersModule, TypeOrmModule.forFeature([Workspace, WorkspaceMember]), SearchModule, RedisModule],
   controllers: [WorkspacesController],
   providers: [WorkspacesService, WorkspaceMembersService],
 })

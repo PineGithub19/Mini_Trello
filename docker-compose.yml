@@ -6,6 +6,8 @@ networks:
 volumes:
   postgres_data:
     name: mini-trello-postgres-data
+  redis_data:
+    name: mini-trello-redis-data
 
 services:
   postgres:
@@ -68,3 +70,13 @@ services:
       - elasticsearch
     networks:
       - mini-trello-net
+
+  redis:
+    image: redis:8-alpine
+    container_name: mini-trello-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
