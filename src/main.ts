@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
+import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
+import { LogstashService } from './logstash/logstash.service';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -26,7 +28,8 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory);
 
   app.setGlobalPrefix('api');
-  app.useGlobalInterceptors(new ResponseTransformInterceptor());
+  const logstashService = app.get(LogstashService);
+  app.useGlobalInterceptors(new LoggerInterceptor(logstashService), new ResponseTransformInterceptor());
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
     whitelist: true,

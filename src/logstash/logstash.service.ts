@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import * as net from 'net';
 
 @Injectable()
-export class LogstashService {
+export class LogstashService implements OnModuleDestroy {
     private client: net.Socket;
     private readonly host = process.env.LOGSTASH_HOST || 'localhost';
     private readonly port = Number(process.env.LOGSTASH_PORT || 5000);
@@ -32,16 +32,40 @@ export class LogstashService {
         });
     }
 
-    log(data: any) {
+    private sendLog(level: string, message: string, context?: any) {
+        const payload = {
+            level,
+            timestamp: new Date().toISOString(),
+            message,
+            ...context,
+        };
+
         try {
             if (this.isConnected) {
-                this.client.write(JSON.stringify(data) + '\n');
+                this.client.write(JSON.stringify(payload) + '\n');
+                console.log(`Logstash sent ${level} log:`, payload);
             } else {
-                console.warn('⚠️ Logstash not connected, dropping log:', data);
+                console.warn(`Logstash not connected, dropping ${level} log:`, payload);
             }
         } catch (error) {
             console.error('Error sending log:', error);
         }
+    }
+
+    log(data: any) {
+        this.info(JSON.stringify(data));
+    }
+
+    info(message: string, context?: any) {
+        this.sendLog('INFO', message, context);
+    }
+
+    warn(message: string, context?: any) {
+        this.sendLog('WARN', message, context);
+    }
+
+    error(message: string, trace?: string, context?: any) {
+        this.sendLog('ERROR', message, { trace, ...context });
     }
 
     onModuleDestroy() {
