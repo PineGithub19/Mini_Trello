@@ -1,6 +1,8 @@
 import { Project } from 'src/projects/entities/project.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import { Workspace } from 'src/workspaces/entities/workspace.entity';
+import { TaskComment } from 'src/task-comments/entities/task-comment.entity';
+import { Notification } from 'src/notificaton/entities/notification.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -13,7 +15,6 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { UserRole } from 'src/auth/enums/role.enum';
-import { TaskComment } from 'src/task-comments/entities/task-comment.entity';
 
 @Entity('users')
 export class User {
@@ -68,6 +69,9 @@ export class User {
 
   @OneToMany(() => TaskComment, (taskComment) => taskComment.user)
   comments: TaskComment[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 
   @BeforeInsert()
   hashPassword() {

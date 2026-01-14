@@ -6,14 +6,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './entities/task.entity';
 import { Repository } from 'typeorm';
 import { TaskException } from 'src/common/exceptions/task.exception';
-import { EventsService } from 'src/events/events.service';
+import { KafkaService } from 'src/kafka/kafka.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
     private taskRepository: Repository<Task>,
-    private eventsService: EventsService
+    private kafkaService: KafkaService,
   ) { }
 
   async create(createTaskDto: CreateTaskDto, userId: string) {
@@ -37,10 +37,7 @@ export class TasksService {
     });
     task.position = lastPosition ? lastPosition.position + 1 : 0;
 
-    this.eventsService.emit({
-      message: 'A task was added',
-      data: task,
-    });
+    this.kafkaService.emitMessage('task.created', { task, userId });
 
     return TaskMapper.toResponse(await this.taskRepository.save(task));
   }
@@ -64,6 +61,7 @@ export class TasksService {
       throw new TaskException('Task not found');
     }
     await this.taskRepository.update({ id }, updateTaskDto);
+    await this.kafkaService.emitMessage('task.updated', { task, userId: task.createdById });
     return this.findOne(id);
   }
 
@@ -73,6 +71,7 @@ export class TasksService {
       throw new TaskException('Task not found');
     }
     await this.taskRepository.delete({ id });
+    await this.kafkaService.emitMessage('task.deleted', { task, userId: task.createdById });
     return TaskMapper.toResponse(task);
   }
 }

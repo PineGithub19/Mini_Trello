@@ -1,6 +1,6 @@
 import { Controller, Sse } from '@nestjs/common';
 import { EventsService, MessageEvent } from './events.service';
-import { Observable, startWith, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Controller('events')
 export class EventsController {
@@ -10,8 +10,8 @@ export class EventsController {
     stream(): Observable<MessageEvent> {
         return this.eventsService.getEvents().pipe(
             tap({
-                subscribe: () => console.log('👂 SSE client connected'),
-                unsubscribe: () => console.log('❌ SSE client disconnected'),
+                subscribe: () => console.log('SSE client connected'),
+                unsubscribe: () => console.log('SSE client disconnected'),
             }),
         );
     }

@@ -17,6 +17,8 @@ import { ListsModule } from './lists/lists.module';
 import { LogstashModule } from './logstash/logstash.module';
 import { SearchModule } from './search/search.module';
 import { RedisModule } from './redis/redis.module';
+import { NotificationModule } from './notificaton/notification.module';
+import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { RedisModule } from './redis/redis.module';
     LogstashModule,
     SearchModule,
     RedisModule,
+    NotificationModule,
+    KafkaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,6 +6,7 @@ import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
 import { LogstashService } from './logstash/logstash.service';
 import * as cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,6 +27,19 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        brokers: ['localhost:9092'],
+      },
+      consumer: {
+        groupId: 'minitrello-consumer',
+      },
+    },
+  });
+  await app.startAllMicroservices();
 
   app.setGlobalPrefix('api');
   const logstashService = app.get(LogstashService);
