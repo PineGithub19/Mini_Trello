@@ -1,3 +1,34 @@
+# Project Introduction
+
+Mini Trello is a domain-driven backend built with NestJS to power collaborative project management across multi-tenant workspaces. The codebase is organized into more than ten dedicated service modules that encapsulate business logic for workspaces, projects, lists, tasks, comments, notifications, search, and analytics. Each module is fully typed with TypeScript to ensure resilient contracts between controllers, services, and data transfer objects.
+
+Authentication and authorization flow through a workspace-aware access control layer. Owners can curate membership, assign granular roles, and enforce permissions at both workspace and resource level, while public endpoints remain opt-in via explicit decorators. Real-time collaboration is delivered through Server-Sent Events so clients receive live updates whenever tasks change state, comments arrive, or assignments shift.
+
+To keep responses fast under load, the application caches workspace metadata and computed aggregates in Redis, minimizing repetitive database reads. A Kafka-backed event stream guarantees that task lifecycle notifications are reliably queued, replayed, and archived, even when downstream consumers experience downtime. Observability is handled with the Elastic stack: Logstash collects structured logs, Kibana surfaces dashboards, and Elasticsearch stores both logs and domain entities to deliver high-throughput, full-text search across boards, tasks, and members.
+
+Binary assets such as workspace backgrounds and user avatars are automatically stored in Supabase object storage, while metadata references are persisted through the application services. Everything runs in Docker Compose, giving contributors a reproducible local environment that orchestrates the NestJS API, Redis, Kafka, Elasticsearch, Logstash, Kibana, and supporting services with a single command.
+
+## Frontend & Demo
+
+Frontend Repository: https://github.com/PineGithub19/Mini_Trello_FE
+
+Demo video:
+
+# NestJS
+
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
+# Project Introduction
+
+## Frontend & Demo
+
+Frontend Repository: https://github.com/PineGithub19/Mini_Trello
+
+Demo video: (add YouTube demo link here)
+
+# NestJS
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>

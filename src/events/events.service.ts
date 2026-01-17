@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Observable, Subject } from 'rxjs';
+import { finalize, Observable, Subject } from 'rxjs';
 
 export interface MessageEvent {
     data: any;
@@ -10,14 +10,40 @@ export interface MessageEvent {
 
 @Injectable()
 export class EventsService {
-    private events$ = new Subject<MessageEvent>();
+    private chatStreams = new Map<string, Subject<MessageEvent>>();
+    private tasks$ = new Subject<MessageEvent>();
 
-    emit(data: any) {
-        console.log(data);
-        this.events$.next({ data });
+    private getOrCreateChatStream(chatId: string): Subject<MessageEvent> {
+        if (!this.chatStreams.has(chatId)) {
+            this.chatStreams.set(chatId, new Subject());
+        }
+        return this.chatStreams.get(chatId)!;
     }
 
-    getEvents(): Observable<MessageEvent> {
-        return this.events$.asObservable();
+    // Emitters
+    emitChatMessage(chatId: string, message: any) {
+        this.getOrCreateChatStream(chatId).next({ data: message });
+    }
+
+    emitTask(data: any) {
+        this.tasks$.next({ data });
+    }
+
+    // Streams
+    chatMessagesStream(chatId: string): Observable<MessageEvent> {
+        const subject = this.getOrCreateChatStream(chatId);
+
+        return subject.asObservable().pipe(
+            finalize(() => {
+                if (subject.observers.length === 0) {
+                    this.chatStreams.delete(chatId);
+                }
+            }),
+        );
+    }
+
+
+    tasksStream(): Observable<MessageEvent> {
+        return this.tasks$.asObservable();
     }
 }

@@ -43,7 +43,7 @@ export class LogstashService implements OnModuleDestroy {
         try {
             if (this.isConnected) {
                 this.client.write(JSON.stringify(payload) + '\n');
-                console.log(`Logstash sent ${level} log:`, payload);
+                // console.log(`Logstash sent ${level} log:`, payload);
             } else {
                 console.warn(`Logstash not connected, dropping ${level} log:`, payload);
             }

@@ -5,7 +5,6 @@ import { ApiResponseWithData } from 'src/common/decorators/response-with-data.de
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectsService } from './projects.service';
-import { Roles } from 'src/auth/decorators/roles/roles.decorator';
 import { WorkspaceMemberRole } from 'src/auth/enums/role.enum';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';

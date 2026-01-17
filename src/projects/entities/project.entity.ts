@@ -1,8 +1,8 @@
+import { Chat } from "src/chat/entities/chat.entity";
 import { List } from "src/lists/entities/list.entity";
-import { Task } from "src/tasks/entities/task.entity";
 import { User } from "src/users/entities/user.entity";
 import { Workspace } from "src/workspaces/entities/workspace.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('projects')
 export class Project {
@@ -40,4 +40,7 @@ export class Project {
 
     @OneToMany(() => List, (list) => list.project, { onDelete: 'CASCADE' })
     lists: List[];
+
+    @OneToOne(() => Chat, (chat) => chat.project)
+    chat: Chat;
 }

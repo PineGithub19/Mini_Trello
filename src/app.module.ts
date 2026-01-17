@@ -19,6 +19,8 @@ import { SearchModule } from './search/search.module';
 import { RedisModule } from './redis/redis.module';
 import { NotificationModule } from './notificaton/notification.module';
 import { KafkaModule } from './kafka/kafka.module';
+import { ChatModule } from './chat/chat.module';
+import { ChatMessagesModule } from './chat-messages/chat-messages.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { KafkaModule } from './kafka/kafka.module';
     RedisModule,
     NotificationModule,
     KafkaModule,
+    ChatModule,
+    ChatMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -15,6 +15,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { UserRole } from 'src/auth/enums/role.enum';
+import { ChatMessages } from 'src/chat-messages/entities/chat-messages.entity';
 
 @Entity('users')
 export class User {
@@ -72,6 +73,9 @@ export class User {
 
   @OneToMany(() => Notification, (notification) => notification.user)
   notifications: Notification[];
+
+  @OneToMany(() => ChatMessages, (chatMessages) => chatMessages.user)
+  chatMessages: ChatMessages[];
 
   @BeforeInsert()
   hashPassword() {
