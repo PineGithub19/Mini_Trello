@@ -36,6 +36,7 @@ export class ChatMessagesService {
             relations: ['user'],
             order: { createdAt: 'ASC' }
         });
+
         return messages.map(msg => ChatMessagesMapper.toResponseWithUser(msg, UserMapper.toResponse(msg.user)));
     }
 

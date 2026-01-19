@@ -1,3 +1,4 @@
+import { AiConversation } from "src/ai-conversations/entities/ai-conversations.entity";
 import { Chat } from "src/chat/entities/chat.entity";
 import { List } from "src/lists/entities/list.entity";
 import { User } from "src/users/entities/user.entity";
@@ -43,4 +44,7 @@ export class Project {
 
     @OneToOne(() => Chat, (chat) => chat.project)
     chat: Chat;
+
+    @OneToOne(() => AiConversation, (aiConversation) => aiConversation.project)
+    aiConversation: AiConversation;
 }

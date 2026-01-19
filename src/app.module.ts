@@ -21,6 +21,9 @@ import { NotificationModule } from './notificaton/notification.module';
 import { KafkaModule } from './kafka/kafka.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatMessagesModule } from './chat-messages/chat-messages.module';
+import { ChatBotModule } from './chat-bot/chat-bot.module';
+import { AiConversationsModule } from './ai-conversations/ai-conversations.module';
+import { AiMessagesModule } from './ai-messages/ai-messages.module';
 
 @Module({
   imports: [
@@ -49,6 +52,9 @@ import { ChatMessagesModule } from './chat-messages/chat-messages.module';
     KafkaModule,
     ChatModule,
     ChatMessagesModule,
+    ChatBotModule,
+    AiConversationsModule,
+    AiMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

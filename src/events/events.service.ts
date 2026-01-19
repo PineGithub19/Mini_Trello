@@ -42,7 +42,6 @@ export class EventsService {
         );
     }
 
-
     tasksStream(): Observable<MessageEvent> {
         return this.tasks$.asObservable();
     }
