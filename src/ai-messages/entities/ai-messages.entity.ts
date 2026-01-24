@@ -2,7 +2,7 @@
 import { AiConversation } from "src/ai-conversations/entities/ai-conversations.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-enum AiMessageRole {
+export enum AiMessageRole {
     USER = 'user',
     ASSISTANT = 'assistant',
     SYSTEM = 'system'

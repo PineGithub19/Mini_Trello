@@ -37,7 +37,7 @@ export class ChatBotService {
     }
 
     emit(chatId: string, data: any) {
-        this.getOrCreateStream(chatId).next({ data });
+        this.getOrCreateStream(chatId).next(data);
     }
 
     complete(chatId: string) {
@@ -47,14 +47,50 @@ export class ChatBotService {
 
     async generate(conversationId: string, paginationOptions: PaginationOptionsDto, dto: ChatBotStreamDto, userId: string) {
         const paginatedMessages = await this.aiMessagesService.findAll(conversationId, paginationOptions);
-        const messages: ChatCompletionMessageParam[] = paginatedMessages.items.map((message) => ({
+        const messages = paginatedMessages.items.map((message) => ({
             role: message.role,
             content: message.content,
-        })) as ChatCompletionMessageParam[];
+        }));
+
+        const SYSTEM_PROMPT = `
+            You are a helpful, concise, and accurate AI assistant.
+            - Answer based on the conversation context.
+            - If the user's question is unclear, ask for clarification.
+            - Do NOT repeat previous answers unless necessary.
+            - Use string response.
+        `;
+
+        const buildMessages = (
+            history: { role: string; content: string }[],
+        ): ChatCompletionMessageParam[] => {
+            const cleaned = history
+                .filter(
+                    (m) =>
+                        (m.role === "user" || m.role === "assistant") &&
+                        typeof m.content === "string" &&
+                        m.content.trim().length > 0,
+                )
+                .map((m) => ({
+                    role: m.role as AiMessageRole,
+                    content: m.content.trim(),
+                }));
+
+            return [
+                {
+                    role: AiMessageRole.SYSTEM,
+                    content: SYSTEM_PROMPT,
+                },
+                ...cleaned,
+            ];
+        };
+
+        const promptMessage = buildMessages(messages);
+        console.log(promptMessage);
+
 
         const stream = await this.openai.chat.completions.create({
             model: dto.model || 'gpt-4o-mini',
-            messages: messages,
+            messages: promptMessage,
             stream: true,
             max_completion_tokens: dto.options?.maxTokens || 500,
             temperature: dto.options?.temperature || 0.7,
@@ -72,13 +108,13 @@ export class ChatBotService {
             }
         }
 
-        await this.aiMessagesService.create({
+        const aiMessage = await this.aiMessagesService.create({
             conversationId,
             role: AiMessageRole.ASSISTANT,
             content: assistantResponse,
         }, userId);
 
-        this.kafkaService.emitMessage('ai_message_completed', { conversationId });
+        this.kafkaService.emitMessage('ai_message_completed', { conversationId, messageId: aiMessage.id });
     }
 
     // streamChat(

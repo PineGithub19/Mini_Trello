@@ -17,7 +17,12 @@ export class ChatBotController {
   @Sse('stream')
   @ApiOperation({ summary: 'Stream chat response from AI' })
   stream(@Query('chatId') chatId: string): Observable<ChatMessage> {
-    return this.chatBotService.stream(chatId);
+    return this.chatBotService.stream(chatId).pipe(
+      tap({
+        subscribe: () => console.log(`ChatBot SSE connected for ${chatId}`),
+        unsubscribe: () => console.log(`ChatBot SSE disconnected for ${chatId}`),
+      }),
+    );
   }
 
   @Post('send')
@@ -45,8 +50,12 @@ export class ChatBotController {
   @MessagePattern('ai_message_completed')
   handleDone(@Payload() payload: {
     conversationId: string;
+    messageId: string;
   }) {
-    this.chatBotService.emit(payload.conversationId, { type: 'done' });
+    this.chatBotService.emit(payload.conversationId, {
+      type: 'done',
+      value: payload.messageId,
+    });
     this.chatBotService.complete(payload.conversationId);
   }
 

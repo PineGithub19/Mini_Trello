@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AiMessageRole } from '../entities/ai-messages.entity';
 
 export class AiMessageResponse {
     @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000', description: 'The unique identifier of the AI message' })
@@ -11,7 +12,7 @@ export class AiMessageResponse {
     createdBy: string;
 
     @ApiProperty({ example: 'user', description: 'The role of the message sender', enum: ['user', 'assistant', 'system'] })
-    role: string;
+    role: AiMessageRole;
 
     @ApiProperty({ example: 'What is the weather like today?', description: 'The content of the message' })
     content: string;
